@@ -48,8 +48,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
         with:
           toolchain: stable
-      - run: choco install nasm -y --no-progress
-      - run: echo "C:\Program Files\NASM" >> $env:GITHUB_PATH
+      # The image carries a nasm (Strawberry Perl); the build must not need it.
+      - shell: bash
+        run: while p=$(command -v nasm); do rm -f "$p"; done
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
       # The release binaries are built with asm, so this is the configuration to test.
       - run: cargo build --release --locked --features asm
