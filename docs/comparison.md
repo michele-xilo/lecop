@@ -93,19 +93,19 @@ episodes, 6,075,103 frames at 30 fps, three AV1 cameras at 640x480, 75 GB on dis
 AMD Ryzen 9 7900X (12 cores, 24 threads), 124 GB RAM, Linux, warm page cache. leCop 0.1.2 built with
 `cargo build --release --features asm` (as the PyPI wheels and release binaries are), Rust 1.99.0, default thread count.
 lerobot-doctor 0.2.0 and physlint 0.4.0 from PyPI on Python 3.14.3. Same commands and configuration as `scripts/compare.py`.
-leCop without decoding is the median of 3 runs after one warm-up; every other figure is a single run, because one
-physlint run takes over five hours. Wall time and peak memory are from `/usr/bin/time -v`. The runs were sequential.
-The two Python tools ran with 70 to 90% of the CPU idle. The leCop decoding run shared the CPU with a desktop file
-indexer (load 26 to 38 on 24 threads), so its time is if anything too high.
+leCop is the median of 3 runs without decoding and of 2 runs with decoding, each after one warm-up. lerobot-doctor
+and physlint are single runs, because one physlint run takes over five hours. Wall time and peak memory are from
+`/usr/bin/time -v`. The runs were sequential, on an otherwise idle machine; the two Python tools use one core and
+had at least 70% of the CPU idle beside them.
 
 | Run | leCop | lerobot-doctor | physlint |
 |---|---|---|---|
 | Without video decoding | 🏆 **0.72 s**, 1.9 GB | 54 min, 5.6 GB | 5 h 12 min, 1.1 GB |
-| Decoding every frame | 🏆 **14 min 31 s**, 16.3 GB | n/a | n/a: cannot decode AV1, see below |
+| Decoding every frame | 🏆 **11 min 47 s**, 15 GB | n/a | n/a: cannot decode AV1, see below |
 
 Without decoding, leCop is about 4,500 times faster than lerobot-doctor and 26,000 times faster than physlint on this
 dataset. Both Python tools run on one core (99% and 109% CPU), leCop on four on average (413%) without decoding and
-on all 24 (1943%) when decoding.
+on all 24 (2384%) when decoding.
 
 Both Python tools slow down faster than the dataset grows, so the speedup depends on its size: 15x to 54x on the small
 datasets above, thousands of times here. lerobot-doctor's near-duplicate check compares every pair of episodes, 378
