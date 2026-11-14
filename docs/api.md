@@ -66,5 +66,5 @@ for issue in validate(&ds)? {
 ```
 
 The issue codes and the CLI output are the stable contract. The Rust API can change in any 0.x release, so pin the
-version. As a dependency, AV1 decoding is about 3 times slower than in the wheels unless you enable the `asm` cargo
-feature (needs nasm on x86_64); see [Decoding frames](usage.md#decoding-frames).
+version. AV1 decoding speed is the same as in the wheels on ARM and on x86_64 Linux, Windows and macOS; see
+[Decoding frames](usage.md#decoding-frames).

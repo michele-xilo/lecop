@@ -68,17 +68,16 @@ build includes the decoders; pass `--decode` to use them:
 lecop validate --decode datasets/my_dataset
 ```
 
-The PyPI wheels, the release binaries and `cargo binstall lecop` are built with the `asm` feature: rav1d's hand-written
-assembly, which decodes AV1 about 3 times faster (18 s against 67 s on `c_so100_press_red_button`, Apple M-series).
-On ARM (aarch64) every build has it, since it needs only the C compiler. On x86_64 it needs nasm, so
-`cargo install lecop` and a Rust project that depends on the `lecop` crate build without it there so that they need
-no extra tools (the crate's `asm` feature turns it on); pip builds from the source distribution, on a platform with no
-wheel, do the same. To get the fast build from source on x86_64, install [nasm](https://www.nasm.us)
-(`apt install nasm`, `brew install nasm`) and run `cargo install lecop --features asm`. A `--decode` run on a build without the assembly ends with a `note:` line on
+AV1 is decoded with rav1d's hand-written assembly, about 3 times faster than without it (18 s against 67 s on
+`c_so100_press_red_button`, Apple M-series). Every build has it on ARM (aarch64) and on x86_64 Linux, Windows and
+macOS, with no extra tools: the PyPI wheels, the release binaries, `cargo binstall lecop`, `cargo install lecop`, a
+Rust project that depends on the `lecop` crate and pip builds from the source distribution. On ARM the C compiler
+assembles it; for x86_64 the decoder crate ships the assembled objects. On any other target the build leaves it out
+unless you install [nasm](https://www.nasm.us) and enable the crate's `asm` feature. A `--decode` run on a build without the assembly ends with a `note:` line on
 stderr saying so; stdout and `--format json` are unchanged. `cargo install lecop --no-default-features` builds without the decoders (9.1 MB
 instead of 11.2 MB); `--decode` then says it needs a build with `--features decode`.
 
-H.264 is decoded with openh264 and AV1 with rav1d (the `hiraku-rav1d` fork). Per frame leCop keeps the mean
+H.264 is decoded with openh264 and AV1 with rav1d (the `lecop-rav1d` fork). Per frame leCop keeps the mean
 luma and the difference to the previous frame, so it reports frames the decoder rejects (`video_decode`), a camera that
 repeats the same picture (`video_frozen`) and one that shows black (`video_black`). The output ends with
 `Video frames were decoded (--decode).` when it ran. A video in another codec is reported as `not decoded`, not skipped.

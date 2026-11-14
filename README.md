@@ -48,10 +48,9 @@ pip install lecop      # or: pipx install lecop
 cargo binstall lecop   # prebuilt binary, nothing to compile
 ```
 
-Or `cargo install lecop` to compile it yourself. That build needs no extra tools. On x86_64 it decodes AV1
-(`--decode`) about 3 times slower; for the fast build install [nasm](https://www.nasm.us) (`apt install nasm`,
-`brew install nasm`) and run `cargo install lecop --features asm`. ARM builds (Apple Silicon, Linux aarch64) are fast
-without it. `--decode` prints a note on stderr when the build lacks the assembly.
+Or `cargo install lecop` to compile it yourself. That build needs no extra tools and decodes AV1 (`--decode`) with
+rav1d's assembly on ARM (Apple Silicon, Linux aarch64) and on x86_64 Linux, Windows and macOS. On other targets
+`--decode` prints a note on stderr saying the build lacks the assembly.
 
 </details>
 
@@ -99,8 +98,7 @@ for issue in validate(&ds)? {
 ```
 
 The issue codes and the CLI output are a stable contract; the Rust API can change in any 0.x release, so pin the
-version. As a dependency, AV1 decoding (`--decode`) runs without rav1d's assembly, about 3 times slower, unless you
-enable the `asm` feature (needs nasm on x86_64). Several datasets, `--decode` and the other options are in the [crate documentation](https://docs.rs/lecop).
+version. Several datasets, `--decode` and the other options are in the [crate documentation](https://docs.rs/lecop).
 
 ## What it catches
 

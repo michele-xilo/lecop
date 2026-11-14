@@ -153,8 +153,20 @@ fn segments(sync: &[usize], total: usize, target: usize) -> Vec<std::ops::Range<
 
 /// Decode the video at `path`, a task per segment of at least `target` samples; the result does not depend on
 /// `target`. Public so that tests and benchmarks can choose the segment length.
-/// True when rav1d's assembly is compiled in: always on aarch64 (see Cargo.toml), elsewhere only with `asm`.
-pub const AV1_ASM: bool = cfg!(any(target_arch = "aarch64", feature = "asm"));
+/// True when rav1d's assembly is compiled in: always on aarch64 and on x86_64 Linux, Windows and macOS (see
+/// Cargo.toml), elsewhere only with `asm`.
+pub const AV1_ASM: bool = cfg!(any(
+    target_arch = "aarch64",
+    all(
+        target_arch = "x86_64",
+        any(
+            target_os = "linux",
+            target_os = "windows",
+            target_os = "macos"
+        )
+    ),
+    feature = "asm"
+));
 
 /// The stderr note for a `--decode` run on a build whose AV1 decoder has no assembly (about 3x slower).
 pub fn asm_note(decoding: bool, asm: bool) -> Option<&'static str> {
