@@ -61,9 +61,9 @@ lecop path/to/dataset
 ```
 
 No config, no dataset download, and the wheel is a single Rust binary: no Python dependencies. Exit code 0 means
-clean, 1 means errors, so it works as a step in a data pipeline (see [In a pipeline](docs/usage.md#in-a-pipeline)). The PyPI wheels, `cargo binstall` and the
-[release binaries](https://github.com/michele-xilo/lecop/releases) are built with the AV1 assembly; everything except
-`--decode` runs at the same speed in every build.
+clean, 1 means errors, so it works as a step in a data pipeline (see [In a pipeline](docs/usage.md#in-a-pipeline)). Every install (PyPI wheels, `cargo binstall`, the
+[release binaries](https://github.com/michele-xilo/lecop/releases) and `cargo install`) decodes AV1 with hand-written
+assembly on ARM and on x86_64 Linux, Windows and macOS.
 
 ### From Python
 
@@ -116,6 +116,10 @@ version. Several datasets, `--decode` and the other options are in the [crate do
 
 - **Fast.** 8 to 28 ms per dataset without video decoding, 15x to 54x faster than lerobot-doctor on the same checks.
   Video is checked from the container, not by decoding frames, unless you ask for `--decode`.
+- **Fast when it decodes, too.** With `--decode` every frame is decoded, 3.5x to 114x faster than physlint
+  ([comparison](docs/comparison.md#with-video-decoding)). Videos are split at keyframes and decoded on every core, and
+  AV1, the LeRobot default codec, goes through rav1d's hand-written assembly: about 3 times faster than without it, and
+  included in every install on ARM and on x86_64 Linux, Windows and macOS, with no ffmpeg and no assembler to set up.
 - **Nothing to set up.** One binary. LeRobot v2.x and v3.x.
 - **Made for pipelines.** Run it after recording or conversion, or as a gate before training. Stable issue codes, `--format json` and GitHub annotations, a config file to ignore or re-grade
   findings.

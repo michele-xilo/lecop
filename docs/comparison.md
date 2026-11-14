@@ -88,5 +88,8 @@ is not the same work.
 | `c_so101_block_box_50episodes_final` (v3.0) | 🏆 **1,291 ms** | 5,877 ms | 4.6x faster |
 | `c_black-stressball-tutorial` (v3.0) | 🏆 **3,164 ms** | 17,162 ms | 5.4x faster |
 
-leCop splits each video at its keyframes and decodes the pieces in parallel, so one large file uses every core, and AV1
-is decoded with assembly (see [Decoding frames](usage.md#decoding-frames)).
+leCop splits each video at its keyframes and decodes the pieces in parallel, so one large file uses every core. AV1 is
+decoded with rav1d's hand-written assembly, about 3 times faster than the same decoder without it (18 s against 67 s on
+`c_so100_press_red_button`, Apple M-series). Every install has it on ARM and on x86_64 Linux, Windows and macOS,
+including `cargo install lecop`, with no ffmpeg and no assembler on the machine (see
+[Decoding frames](usage.md#decoding-frames)).
