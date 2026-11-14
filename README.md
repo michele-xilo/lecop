@@ -11,7 +11,8 @@
   <img src="https://img.shields.io/badge/rust-stable-orange?logo=rust" alt="Rust">
 </p>
 
-**Find the broken episodes in your [LeRobot](https://github.com/huggingface/lerobot) dataset in milliseconds, before they cost you a training run.**
+**Find the broken episodes in your [LeRobot](https://github.com/huggingface/lerobot) dataset in milliseconds, before they cost you a training run.<br>
+At the speed of Rust and assembly.**
 
 <p align="center">
   <img src="assets/demo.gif" alt="lecop validating a dataset: it lists a video with the wrong number of frames and an idle episode" width="800">
