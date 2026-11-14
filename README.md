@@ -116,7 +116,9 @@ enable the `asm` feature (needs nasm on x86_64). Several datasets, `--decode` an
 
 ## Why leCop
 
-- **Fast.** 8 to 28 ms per dataset without video decoding, 15x to 54x faster than lerobot-doctor on the same checks.
+- **Fast.** 8 to 28 ms per dataset without video decoding, 15x to 54x faster than lerobot-doctor on the same datasets.
+  On [RoboTwin](docs/comparison.md#a-large-dataset-robotwin) (27,500 episodes, 75 GB), leCop takes 0.7 s, lerobot-doctor
+  54 minutes and physlint 5 hours.
   Video is checked from the container, not by decoding frames, unless you ask for `--decode`.
 - **Nothing to set up.** One binary. LeRobot v2.x and v3.x.
 - **Made for pipelines.** Run it after recording or conversion, or as a gate before training. Stable issue codes, `--format json` and GitHub annotations, a config file to ignore or re-grade
