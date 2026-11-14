@@ -47,12 +47,15 @@ frame, and leCop reads container metadata only unless asked. So two tables are r
 the same video work: none decodes in the first, leCop and physlint decode everything in the second. Median wall time of 3 runs after one warm-up, warm page cache, including process start, every run in
 a fresh empty working directory with physlint's result cache off. Apple M2 Pro, Python 3.12, leCop `release` build,
 lerobot-doctor 0.2.0 and physlint 0.4.0 installed from PyPI. physlint reads v3 only. The tools check different things
-(see the comparison above), so this compares speed only. Reproduce with `scripts/compare.py`.
+(see the comparison above), so this compares speed only. Reproduce with `scripts/compare.py`;
+`scripts/speed_chart.py` draws the charts from the tables below. The time axis is logarithmic.
 
 ### Without video decoding
 
 lerobot-doctor runs every check but `videos`; physlint runs with its `video.decode`, `video.frozen_frames` and
 `video.black_frames` rules off; leCop is the default build.
+
+![Wall time per dataset without video decoding, log scale: leCop takes 8 to 28 ms, lerobot-doctor 368 to 686 ms, physlint 0.7 to 15 s](../assets/speed-novideo.svg)
 
 | Dataset | leCop | lerobot-doctor | physlint | leCop vs the fastest other tool |
 |---|---|---|---|---|
@@ -72,6 +75,8 @@ lerobot-doctor runs every check but `videos`; physlint runs with its `video.deco
 leCop is built with `--features decode` and run with `--decode`; physlint runs all its rules. Both decode every frame.
 Only physlint is compared here, and only on the v3 datasets it reads: lerobot-doctor decodes one frame per video, which
 is not the same work.
+
+![Wall time per dataset with video decoding, log scale: leCop takes 0.2 to 3.2 s, physlint 5 to 21 s](../assets/speed-video.svg)
 
 | Dataset | leCop | physlint | leCop speedup |
 |---|---|---|---|
