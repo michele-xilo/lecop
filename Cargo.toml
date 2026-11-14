@@ -16,8 +16,8 @@ exclude = [".claude", ".github", ".physlint", "assets/demo.gif", "assets/demo.ta
 default = ["decode"]
 decode = ["dep:openh264", "dep:rav1d"]
 # rav1d's hand-written assembly: AV1 decodes about 3x faster (Apple M-series, `c_so100_press_red_button`: 18 s against
-# 67 s). Always on for aarch64 (see the target dependency below); on x86_64 it needs nasm installed, so it is off by
-# default there and `cargo install lecop` works anywhere. The PyPI wheels and release binaries are built with it.
+# 67 s). Always on for aarch64 and for x86_64 Linux, Windows and macOS (see the target dependency below). On any other
+# target it needs nasm installed, so it is off by default there and `cargo install lecop` works anywhere.
 asm = ["decode", "rav1d?/asm"]
 
 [dependencies]
@@ -29,7 +29,7 @@ clap = { version = "4.6.7", features = ["derive"] }
 ignore = "0.4.34"
 openh264 = { version = "0.9.9", optional = true }
 parquet = { version = "60.1.0", features = ["arrow"] }
-rav1d = { package = "hiraku-rav1d", version = "1.1.1", optional = true, default-features = false, features = ["bitdepth_8", "bitdepth_16"] }
+rav1d = { package = "lecop-rav1d", version = "1.3.0", optional = true, default-features = false, features = ["bitdepth_8", "bitdepth_16"] }
 rayon = "1.12.0"
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = { version = "1.0.154", features = ["raw_value"] }
@@ -37,10 +37,11 @@ toml = "1.2.1"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", default-features = false, features = ["env-filter", "fmt", "ansi"] }
 
-# On ARM rav1d's assembly is built by the C compiler the build already needs (no nasm), at no measurable build-time
-# cost, so it is on whenever the decoder is. Cargo merges these features into `rav1d` above only for aarch64 targets.
-[target.'cfg(target_arch = "aarch64")'.dependencies]
-rav1d = { package = "hiraku-rav1d", version = "1.1.1", optional = true, default-features = false, features = ["asm"] }
+# On these targets rav1d's assembly needs no nasm, so it is on whenever the decoder is: on ARM the C compiler the build
+# already needs assembles it, and for x86_64 Linux, Windows and macOS `lecop-rav1d` ships it as prebuilt objects.
+# Cargo merges these features into `rav1d` above only for these targets.
+[target.'cfg(any(target_arch = "aarch64", all(target_arch = "x86_64", any(target_os = "linux", target_os = "windows", target_os = "macos"))))'.dependencies]
+rav1d = { package = "lecop-rav1d", version = "1.3.0", optional = true, default-features = false, features = ["asm"] }
 
 [dev-dependencies]
 criterion = { version = "0.8.2", default-features = false, features = ["cargo_bench_support"] }

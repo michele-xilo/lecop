@@ -6,9 +6,12 @@ The PyPI wheel installs a `lecop` Python module: `lecop.validate(path)` runs the
 `--format json` report as a dict. The `lecop` command is unchanged, still the native binary.
 
 ARM builds (aarch64) always include rav1d's AV1 assembly, so `cargo install lecop`, crates depending on `lecop` and pip
-builds from the source distribution decode AV1 about 3.8 times faster there, with no extra tools. x86_64 is unchanged.
+builds from the source distribution decode AV1 about 3.8 times faster there, with no extra tools.
 
-`--decode` on a build without rav1d's AV1 assembly (x86_64 `cargo install` without nasm) prints a one-line `note:` on
+x86_64 Linux, Windows and macOS builds always include rav1d's AV1 assembly too, with no nasm: the AV1 decoder is now
+`lecop-rav1d`, a rav1d fork that ships the assembly as prebuilt objects. The `asm` feature remains for other targets.
+
+`--decode` on a build without rav1d's AV1 assembly (a target other than those above, without `--features asm`) prints a one-line `note:` on
 stderr, after the report, saying AV1 decodes about 3 times slower and how to get the fast build.
 
 The crate documentation has runnable examples and states what is stable: the issue codes, the CLI output and the exit

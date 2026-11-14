@@ -11,7 +11,8 @@
   <img src="https://img.shields.io/badge/rust-stable-orange?logo=rust" alt="Rust">
 </p>
 
-**Find the broken episodes in your [LeRobot](https://github.com/huggingface/lerobot) dataset in milliseconds, before they cost you a training run.**
+**Find the broken episodes in your [LeRobot](https://github.com/huggingface/lerobot) dataset in milliseconds, before they cost you a training run.<br>
+At the speed of Rust and assembly.**
 
 <p align="center">
   <img src="assets/demo.gif" alt="lecop validating a dataset: it lists a video with the wrong number of frames and an idle episode" width="800">
@@ -48,10 +49,9 @@ pip install lecop      # or: pipx install lecop
 cargo binstall lecop   # prebuilt binary, nothing to compile
 ```
 
-Or `cargo install lecop` to compile it yourself. That build needs no extra tools. On x86_64 it decodes AV1
-(`--decode`) about 3 times slower; for the fast build install [nasm](https://www.nasm.us) (`apt install nasm`,
-`brew install nasm`) and run `cargo install lecop --features asm`. ARM builds (Apple Silicon, Linux aarch64) are fast
-without it. `--decode` prints a note on stderr when the build lacks the assembly.
+Or `cargo install lecop` to compile it yourself. That build needs no extra tools and decodes AV1 (`--decode`) with
+rav1d's assembly on ARM (Apple Silicon, Linux aarch64) and on x86_64 Linux, Windows and macOS. On other targets
+`--decode` prints a note on stderr saying the build lacks the assembly.
 
 </details>
 
@@ -62,9 +62,9 @@ lecop path/to/dataset
 ```
 
 No config, no dataset download, and the wheel is a single Rust binary: no Python dependencies. Exit code 0 means
-clean, 1 means errors, so it works as a step in a data pipeline (see [In a pipeline](docs/usage.md#in-a-pipeline)). The PyPI wheels, `cargo binstall` and the
-[release binaries](https://github.com/michele-xilo/lecop/releases) are built with the AV1 assembly; everything except
-`--decode` runs at the same speed in every build.
+clean, 1 means errors, so it works as a step in a data pipeline (see [In a pipeline](docs/usage.md#in-a-pipeline)). Every install (PyPI wheels, `cargo binstall`, the
+[release binaries](https://github.com/michele-xilo/lecop/releases) and `cargo install`) decodes AV1 with hand-written
+assembly on ARM and on x86_64 Linux, Windows and macOS.
 
 ### From Python
 
@@ -99,8 +99,7 @@ for issue in validate(&ds)? {
 ```
 
 The issue codes and the CLI output are a stable contract; the Rust API can change in any 0.x release, so pin the
-version. As a dependency, AV1 decoding (`--decode`) runs without rav1d's assembly, about 3 times slower, unless you
-enable the `asm` feature (needs nasm on x86_64). Several datasets, `--decode` and the other options are in the [crate documentation](https://docs.rs/lecop).
+version. Several datasets, `--decode` and the other options are in the [crate documentation](https://docs.rs/lecop).
 
 ## What it catches
 
@@ -118,6 +117,10 @@ enable the `asm` feature (needs nasm on x86_64). Several datasets, `--decode` an
 
 - **Fast.** 8 to 28 ms per dataset without video decoding, 15x to 54x faster than lerobot-doctor on the same checks.
   Video is checked from the container, not by decoding frames, unless you ask for `--decode`.
+- **Fast when it decodes, too.** With `--decode` every frame is decoded, 3.5x to 114x faster than physlint
+  ([comparison](docs/comparison.md#with-video-decoding)). Videos are split at keyframes and decoded on every core, and
+  AV1, the LeRobot default codec, goes through rav1d's hand-written assembly: about 3 times faster than without it, and
+  included in every install on ARM and on x86_64 Linux, Windows and macOS, with no ffmpeg and no assembler to set up.
 - **Nothing to set up.** One binary. LeRobot v2.x and v3.x.
 - **Made for pipelines.** Run it after recording or conversion, or as a gate before training. Stable issue codes, `--format json` and GitHub annotations, a config file to ignore or re-grade
   findings.
